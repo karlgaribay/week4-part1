@@ -1,0 +1,11 @@
+---
+title: "CIs and T-tests"
+author: "Karla Garibay Garcia"
+date: "10/28/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
