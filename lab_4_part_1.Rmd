@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
 ```
 
 ## 1. Confidence intervals
@@ -85,6 +86,82 @@ t.test(x = desert_bighorns,
 
 
 ```
+
+## Part 2: Two-sample t-test
+
+### Basic wrangling
+
+Create a subset that:
+
+- Retains observations for suvs and compact cars
+
+```{r}
+compact_suv <- mpg %>% 
+  filter(class %in% c("compact", "suv"))
+```
+
+### Exploratory data visualization
+
+1. Exploratory histograms to understand the distribution of our observations before we decide the type of analysis or test that's appropriate. Histograms only plot a single variable. It then does the counts that show up on the x-axis for you. 
+
+`facet_wrap(~class)` gives you data for each class within your data. Number of bins can be adjusted so that it reflects the number of observations in a way that is meaningful and useful for us. 
+
+Samples look somewhat bell-shaped in the histograms. 
+
+```{r}
+ggplot(data = compact_suv,
+       aes(x = cty)) +
+  geom_histogram(bins = 15) +
+  facet_wrap(~class)
+```
+
+2. QQ Plot: A great way to compare distributions to a normal distribution to see how close to normally distributed they are. Plots my actual values for my observations vs. theoretical values if they're perfectly drawn from a normal distribution. So the closer the relationship gets to linear, the closer my sample is to normal distribution.
+
+
+```{r}
+ggplot(data = compact_suv, 
+       aes(sample = cty)) + 
+  geom_qq() + 
+  facet_wrap(~class)
+```
+
+### Descriptive statistics
+
+Use `n = n()` to find out sample size because the larger n gets, the closer our sampling distribution of means will get to normally distributed. So even if our population distribution wasn't normally distributed, because of the CLT and the n, it'll be ok because we still know the distribution of means will be normal, so a t-test would still be appropriate to compare these means. 
+
+This is the baseline exploration to do before considering to do a t-test. Along with critically thinking about whether our sample is representative of our population.  
+
+```{r}
+car_stats <- compact_suv %>% 
+  group_by(class) %>% 
+  summarise(mean_city = mean(cty), 
+            sd_city = sd(cty),
+            n = n())
+  
+car_stats
+```
+
+### 2-sample t-test
+
+#### Create vectors containing observations for each sample (city gas mileage)
+
+Name new sample, starting from original dataframe, filter to only include compact cars, and then use pull funciton to only pull the values in the city column and store them as a vector to run a t-test. If I used select function, it'll store it as a dataframe with a single column, which is not what t.test function wants. Do the same for suv's to get second vector. 
+
+
+```{r}
+compact_sample <- compact_suv %>% 
+  filter(class == "compact") %>% 
+  pull(cty)
+
+suv_sample <- compact_suv %>% 
+  filter(class == "suv") %>% 
+  pull(cty)
+
+t.test(x = compact_sample, suv_sample)
+```
+Testing a null hypothesis that the means are equal aka samples are drawn from populations with the same mean. I'm testing for what the probability is of getting samples that are at least this different if that null hypothesis is true. This is what p-value tells me. What p-value tells me here is there's close to a 0 chance that I could've drawn samples with means that are at least this different if they were actually taken from populations with the same means. Aka if suvs and compact cars actually had the same city gas mileage, there's close to a 0% chance that I could've randomly taken samples from that population that ended up being at least this different. So it's probably because we drew these samples from populations with different means. 
+
+
 
 
 
