@@ -9,3 +9,84 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## 1. Confidence intervals
+
+
+- In 95% of samples that we took from the population we expect to find the population mean within the range for the CI presented. If we took a hundred samples and we found the CI for all of those, then in 95% of the CI presented, we'd actually expect to find the population mean.
+
+
+- How to describe?The mean length of sea otters (n= 9) is 42.22 inches w/SD of X, 95% CI is 34.7-49.8 inches. 
+
+
+- While the t.test does get us a meaningful mean and CI, the reported t.test outcome is not meaningful on its own because the alternative hypothesis is the actual output for a 1 sample hypothesis test where the default setting is that a null hypothesis is a mean value equal to 0. Based on our sample and our sample mean, it's very unlikely that we could've drawn our sample from a population of otters that have a mean length equal to 0.
+
+
+```{r}
+otter_length <- c(38, 41, 50, 27, 32, 41, 48, 60, 43)
+
+t.test(otter_length)
+
+
+```
+
+## 2. T-test (1-sample)
+
+In the console, type `?t.test` to have information about the function's default settings in the Help tab. 
+
+
+See a claim: mean otter length is 50 inches. 
+
+- Test claim using `x = sample` and null hypothesis `mu =`
+
+- To view data in document, call it by typing the name of it in the r code chunk
+
+- What does p-value mean? If the null hypothesis is really 50 inches, there is a 0.0444 chance that I could've randomly taken a sample from that population that has a mean that is at least as different from 50 as my sample mean is in either direction. 
+
+
+```{r}
+otter_test <- t.test(x = otter_length, 
+                     mu = 50)
+otter_test
+
+```
+
+## 3. T-test (2-sample)
+
+
+Are my differences in my two sample means so different that I think they were drawn from populations with different means. If they were drawn from populations with the same mean then it's:
+- More likely that I will get sample means that are close together taking into account data spread and sample size
+- Less likely that I will get sample means that are very far apart 
+
+
+Welch's 2-sample t-test does not assume equal variances, 
+
+
+Gives me: 
+- Mean of both samples
+
+- What does CI mean? The expected CI for the difference in mean sizes in the horn length. Can be negative because x-y or y-x could be negative.We'd expect the difference between the sample means to be within the CI range for 95% of the samples I took. CI on the difference in means is not usually reported, however. 
+
+
+Focus of this t-test: Testing a null hypothesis that the difference in means equals 0. 
+
+- P-value tells me: if these samples are drawn from populations with the same mean horn length, which is the null hypothesis, then there's almost a 90% chance that I could've taken 2 random samples from those populations and found samples at least as different as the samples that I have. It's a really good chance that I could've retrieved my samples from populations with the same mean and gotten means from my samples that are at least as different as mine are. I don't think I have enough evidence to reject that null hypothesis that they're drawn from populations with the same means. 
+
+Things to remember: 
+
+- it is the probability, if the null hypothesis is true (for a 2-sample test it'll be that the 2 populations have the same mean), that we could've gotten samples with means that are at least as different than ours are. If that probability is really high, there's a good chance they were drawn  from populations with the same mean. As that probability gets lower, it's less likely that we could've randomly drawn those samples with the same mean. Which means that when that probability gets really low, we'd instead decide that they were drawn from populations with different means.  
+
+
+```{r}
+desert_bighorns <- c(32, 44, 18, 26, 50, 33, 42, 40)
+sierra_bighorns <- c(28, 31, 40, 42, 26, 29, 31)
+
+t.test(x = desert_bighorns, 
+       y = sierra_bighorns)
+
+
+```
+
+
+
+
+
